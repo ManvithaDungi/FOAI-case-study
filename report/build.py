@@ -168,9 +168,15 @@ P('The protocol is a Protocol dataclass (models.py) with fields: sample_size, nu
   'Decisions are AgentDecision objects, amendments are Proposal objects and each round is a NegotiationRound. '
   'A scenario is a named set of initial protocol, trial context and private states.')
 H('Dataset description', 2)
-P('No external dataset is used. All parameters (budgets, dose-response, recruitment rates, constraints) are '
-  'synthetic and defined in scenarios.py; the models in trial_tools.py are simplified analytic approximations. '
-  'No patient data is used.')
+P('The scenarios are synthetic, defined in scenarios.py with the starting values of the case-study report '
+  '(320 patients, Sponsor cap 220 and target 180, 10 hospitals, 2 dose arms, 18 months). They are validated against '
+  'real data: 5,000 completed Phase II interventional trials fetched from the ClinicalTrials.gov API v2 '
+  '(fetch_real_data.py, accessed 2026-10-14). Position of the starting values in the real distribution: 320 patients '
+  '= 92nd percentile, cap 220 = 88th, target 180 = 83rd, 10 hospitals = 54th percentile of multi-site trials, '
+  '18 months = 29th percentile; 2 arms is the real median. Real medians: enrolment 56 (IQR 29-122), duration 32 '
+  'months (IQR 16-57). The baseline is therefore a deliberately large, expensive Phase II draft, and its final '
+  'protocol of 180 patients is still above the real 80th percentile. Cost per patient, dose-response and '
+  'constraint thresholds are not recorded in the registry and remain synthetic. No patient-level data is used.')
 H('Modules and sub-modules', 2)
 B(['Environment: shared state, guarded private state, protocol versioning.',
    'Agents: review_protocol, evaluate_proposal (self-check), sanitize (redacts private numbers), mock and LLM '
@@ -183,7 +189,7 @@ B(['Environment: shared state, guarded private state, protocol versioning.',
    'Baseline: single_agent.py with blended weights (cost 0.35, power 0.25, safety 0.20, burden 0.20).',
    'Logging: transcript .txt, result .json, event .jsonl per scenario in outputs/.'])
 H('User interface', 2)
-P('Command-line interface (main.py): --mode {multi-agent,baseline,compare}, --scenario {name|all}, --llm, '
+P('Web UI (streamlit run app.py): scenario picker, round-by-round negotiation, protocol evolution charts, single-vs-multi-agent comparison and constraint audit (Figures 7-10). Command-line interface (main.py): --mode {multi-agent,baseline,compare}, --scenario {name|all}, --llm, '
   '--max-rounds, --no-transcript, --summary, --output-dir, --verbose. Results are shown as a readable '
   'transcript and final-result summary and saved to outputs/.')
 H('Scalability and code structure', 2)
@@ -223,13 +229,13 @@ T([['Scenario', 'MAS rounds', 'MAS violations', 'Single-agent violations'],
    ['baseline', '4', '0', '7'], ['budget_reduction', '5', '0', '8'], ['high_risk_drug', '5', '0', '9'],
    ['rare_disease', '5', '0', '7'], ['pediatric', '4', '0', '10'], ['pandemic', '4', '0', '8'],
    ['multi_country', '4', '0', '8'], ['unexpected_interim', '3', '0', '4']])
-P('Discussion: in the baseline scenario the Sponsor\'s first cut (320 -> 180 patients) is blocked by the '
-  'Biostatistician because power would fall too low; the IRB lowers the dosage to 75 mg and tightens '
-  'exclusions; the Patient Advocate\'s visit reduction is only accepted once the Sponsor funds remote '
-  'monitoring. The final protocol has power 0.847 and zero violations. The single-agent baseline, given all '
-  'constraints in one place, still produced 4-10 violations because trade-offs are soft penalties with no '
-  'veto. The baseline is intentionally naive, so this shows the effect of silent trade-offs, not that a '
-  'well-engineered optimiser could never satisfy the constraints.')
+P('Discussion: in the baseline scenario the Sponsor cut from 320 to 180 patients is blocked by the '
+  'Biostatistician because power would fall to about 0.64; the IRB lowers the dosage to 75 mg and tightens '
+  'exclusions; the Patient Advocate visit reduction is accepted only once the Sponsor funds remote monitoring. The '
+  'final protocol has power 0.847 and zero violations. The single-agent baseline, given all constraints in one '
+  'place, still produced 4-10 violations because trade-offs are soft penalties with no veto. The baseline is '
+  'intentionally naive, so this shows the effect of silent trade-offs, not that a well-engineered optimiser could '
+  'never satisfy the constraints.')
 P('Limitations: synthetic simplified models, hand-written mock strategies, deterministic proposal evaluation '
   'even in LLM mode, fixed processing order, best-effort redaction of private numbers.')
 H('Simulation screenshots', 2)
@@ -239,6 +245,10 @@ IMG('05_high_risk.png', 'Figure 3: High-risk drug scenario - dosage held at 50 m
 IMG('03_compare.png', 'Figure 4: Multi-agent vs single-agent comparison across all scenarios.')
 IMG('06_single_agent.png', 'Figure 5: Single-agent baseline output with constraint violations.')
 IMG('04_pytest.png', 'Figure 6: Automated test run - 96 passed.')
+IMG('ui_01_negotiation.png', 'Figure 7: Web UI - negotiation view with per-round agent decisions.')
+IMG('ui_02_protocol.png', 'Figure 8: Web UI - protocol evolution table and power / budget charts.')
+IMG('ui_03_comparison.png', 'Figure 9: Web UI - multi-agent vs single-agent comparison.')
+IMG('ui_04_audit.png', 'Figure 10: Web UI - independent constraint audit.')
 
 D.save('report/Clinical_Trial_MAS_Report.docx')
 

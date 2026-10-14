@@ -1,3 +1,6 @@
-# Runtime: Python 3.11+ standard library only (LLM calls use urllib).
+# Runtime: Python 3.10+ standard library only (LLM calls use urllib).
 # Development / tests:
 pytest>=7.0
+
+# Optional UI:
+streamlit>=1.30

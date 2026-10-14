@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 from typing import Any, Callable
 
 from models import BIOSTATISTICIAN, ETHICS, PATIENT_ADVOCATE, SPONSOR, PrivateState, Protocol, TrialContext
+from real_data import validation
 
 
 @dataclass
@@ -138,6 +139,7 @@ def baseline() -> Scenario:
         regulatory_references=["ICH E6(R2) Good Clinical Practice", "ICH E9 Statistical Principles",
                                "21 CFR 312 (IND regulations)"],
         clinical_guidelines={"phase": "II", "follow_up_months": 6,
+                             "real_data_validation": validation(),  # where the starting values sit in real Phase II data
                              "note": "Synthetic guidance for simulation only; not medical advice."},
         study_timeline={"planned_start": "Month 0", "planned_duration_months": 18},
     )

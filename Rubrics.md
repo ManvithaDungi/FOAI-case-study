@@ -66,19 +66,18 @@ Short answer: **the code and design content is almost all there, but the report 
 
 ## Rubric report sections
 
-| Section | Status | Where |
-|---|---|---|
-| **1. Introduction** | Present (raw material) | Case study `.md` §1–5; README §1–3 |
-| **2. PEAS** | Partial | README has a 4-row PEAS table. **Missing:** explicit performance metric definitions, and an explicit *input→sensor* and *output→actuator* mapping (the table lists them but doesn't map them) |
-| **3. Agent & environment analysis** | Partial | The environment is described in one line ("partially observable, multi-agent, sequential, deterministic in mock mode"). **Missing:** the *agent category* (goal-based / utility-based / learning, etc.) is never stated, and there's no full classification (static vs dynamic, discrete vs continuous, known vs unknown, episodic vs sequential, competitive vs cooperative) |
-| **4. Design** | Mostly present | Architecture diagram, file table, workflow (README §4, §7, §8). **Missing:** hardware/software requirements section (only install steps), and no explicit "algorithms used" statement (e.g. rule-based negotiation, priority-ordered proposal evaluation, field-by-field fallback) |
-| **5. Implementation** | Mostly present | Modules, mock/LLM modes, CLI, scenarios. **Missing:** "input representation" described as such (dataclasses are in `models.py`, not explained), and a **dataset** note (it's synthetic scenarios; say so explicitly). The "UI" is CLI-only |
-| **6. Testing & results** | Partial | 7 test files, outputs for scenarios, compare table. **Missing:** a written discussion of test levels (unit / integration / scenario), and **screenshots**; none exist in the folder |
+| Section | Status | Present | Missing |
+|---|---|---|---|
+| **1. Introduction** | Present | README §1–3 (overview, problem, why multi-agent); case study `.md` | Nothing significant |
+| **2. PEAS** | Present | README PEAS summary; `docs/rubric_docs.md` §A: detailed PEAS table, metric definitions with targets, per-agent input→sensor and output→actuator mapping | Nothing significant |
+| **3. Agent & environment analysis** | Present | `docs/rubric_docs.md` §B: agent category (goal-based, utility-oriented, deliberative; mixed cooperative-competitive MAS) and full environment classification (observability, agents, determinism, episodic/sequential, static/dynamic, discrete/continuous, known/unknown) | Nothing significant |
+| **4. Design** | Present | Architecture diagram, file table, workflow (README §4, §7, §8); `docs/rubric_docs.md` §C: algorithms used, hardware/software requirements, tool/package details, scalability | Nothing significant |
+| **5. Implementation** | Present | Modules and sub-modules, mock/LLM modes, scenarios; `docs/rubric_docs.md` §D: input representation (`models.py` dataclasses), dataset note (synthetic scenarios, no patient data), UI (Streamlit `app.py` plus CLI `main.py`) | Nothing significant |
+| **6. Testing & results** | Present | 7 test files; test levels table (unit / algorithm / integration / scenario); outputs for all 8 scenarios in `outputs/`; 6 screenshots in `docs/screenshots/` | Screenshots cover only baseline, compare, pytest, high-risk and single-agent runs (none for the other 5 scenarios); scenario figures and "96 passed" not re-verified by a fresh run |
 
 ## Other gaps
 
-- **Outputs are incomplete.** Only `baseline`, `budget_reduction`, `high_risk_drug`, `pediatric` are in `outputs/`. `rare_disease`, `pandemic`, `multi_country`, `unexpected_interim` have no saved results, though the README table claims results for all eight.
-- **Q&A / presentation (1 mark):** no slides or demo script.
-- **README mentions `scenarios.py` "baseline + 7"**, which matches the case study, so that's consistent.
-- Some README numbers (e.g. `compare` table, power 0.847) should be re-verified by running the code before you cite them in the report.
+- **Q&A / presentation (1 mark):** `DEMO_AND_QA.md` covers the demo flow and likely questions; there are no finished slides in the folder (only `report/update_deck.py` and `report/build_deck.py.bak`).
+- **Duplication:** the rubric documentation exists in both `docs/rubric_docs.md` and at the end of `README.md`; keep the two in sync.
+- **Final report:** `report/Clinical_Trial_MAS_Report.docx` exists, but its content was not checked against the 6-section structure.
 

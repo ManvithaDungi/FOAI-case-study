@@ -2,7 +2,7 @@
 
 ## 5-minute demo flow
 1. Problem (30 s): four stakeholders, hidden limits, one protocol.
-2. `python main.py` - walk through Round 1: Sponsor cuts sample 320->180; Biostatistician fixes power via endpoint; IRB lowers dose to 75 mg; Advocate asks for fewer visits.
+2. `python main.py` - walk through Round 1: Sponsor cuts sample 320->180 and is blocked (power 0.64); Biostatistician fixes power via endpoint; IRB lowers dose to 75 mg; Advocate asks for fewer visits.
 3. Show a blocked proposal (sample 180 blocked, power too low) and the IRB "objection overridden" lines.
 4. `python main.py --scenario high_risk_drug --summary` - IRB resists acceleration (50 mg, 12 months).
 5. `python main.py --mode compare --scenario all` - MAS 0 violations vs single agent 4-10.
@@ -17,3 +17,4 @@
 - **Is it real LLM negotiation?** Default is deterministic mock for reproducibility; `--llm` uses an LLM with JSON validation, fallback and constraint guard.
 - **Is the baseline fair?** It is intentionally naive; it shows silent trade-offs, not that no optimiser could succeed.
 - **Limitations?** Synthetic models, hand-written strategies, fixed order, deterministic evaluation.
+- **Where does the data come from?** Scenarios are synthetic, validated against 5,000 real Phase II trials from ClinicalTrials.gov (API v2, 2026-10-14): 320 patients = 92nd percentile, 10 hospitals = 54th, 2 arms = median.

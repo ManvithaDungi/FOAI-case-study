@@ -1,0 +1,641 @@
+Reasoning mode: MOCK (deterministic)
+============================================================
+FINAL RESULT
+============================================================
+
+Status: CONSENSUS
+Negotiation rounds: 4
+Proposals: 9 (accepted 7, partially 2, rejected 0)
+Objections raised: 5
+Duration: 0.039s
+
+Final Protocol:
+  Sample size            180
+  Hospitals              6
+  Dosage                 75 mg
+  Dose arms (+placebo)   1
+  Trial duration         18 months
+  Budget allocated       $9.50M
+  Estimated cost         $9.01M
+  Power                  0.847
+  Alpha                  0.05
+  Randomization          stratified_block
+  Primary endpoint       continuous_biomarker
+  Hospital visits        4
+  Remote monitoring      True
+  Invasive procedures    1
+  Inclusion criteria     confirmed_diagnosis, age_18_to_75
+  Exclusion criteria     pregnancy, severe_renal_impairment, severe_hepatic_impairment
+  Safety monitoring      monthly
+  AE reporting           expedited_7_day
+  Projected enrolment    9.5 months
+  Version / status       v4 / APPROVED
+
+Constraint violations (independent checker): 0
+============================================================
+============================================================
+SINGLE-AGENT BASELINE
+============================================================
+
+Scenario: Baseline Phase II Protocol
+Mode: single-agent baseline (mock)
+
+Architecture:
+  - one reasoning process with one blended objective (weights {'cost': 0.35, 'power': 0.25, 'safety': 0.2, 'burden': 0.2})
+  - required access to ALL four stakeholders' private constraints
+  - no negotiation, no vetoes, no per-stakeholder audit trail
+
+Generated Protocol:
+  Sample size            260
+  Hospitals              12
+  Dosage                 75 mg
+  Dose arms (+placebo)   1
+  Trial duration         18 months
+  Budget allocated       $13.04M
+  Estimated cost         $13.04M
+  Power                  0.798
+  Alpha                  0.05
+  Randomization          block
+  Primary endpoint       binary_response
+  Hospital visits        4
+  Remote monitoring      False
+  Invasive procedures    1
+  Inclusion criteria     confirmed_diagnosis, age_18_to_55, no_prior_therapy
+  Exclusion criteria     pregnancy, severe_renal_impairment, prior_cancer, bmi_over_35, concomitant_medication
+  Safety monitoring      monthly
+  AE reporting           standard_15_day
+  Projected enrolment    11.1 months
+  Version / status       v1 / GENERATED (no stakeholder approval)
+
+Constraint violations (independent checker): 7
+  - Sponsor: sample_size <= 220 (actual: 260)
+  - Biostatistician: power >= 0.80 (actual: 0.7983)
+  - Ethics Committee: AE reporting >= expedited_7_day (actual: standard_15_day)
+  - Ethics Committee: exclusions include ['pregnancy', 'severe_renal_impairment', 'severe_hepatic_impairment'] (actual: ['pregnancy', 'severe_renal_impairment', 'prior_cancer', 'bmi_over_35', 'concomitant_medication'])
+  - Ethics Committee: visits >= 8 unless remote monitoring (actual: 4)
+  - Patient Advocate: len(exclusion_criteria) <= 4 (actual: 5)
+  - Patient Advocate: no restrictive inclusions ['age_18_to_55', 'no_prior_therapy'] (actual: ['age_18_to_55', 'no_prior_therapy'])
+============================================================
+============================================================
+FINAL RESULT
+============================================================
+
+Status: CONSENSUS
+Negotiation rounds: 5
+Proposals: 9 (accepted 7, partially 2, rejected 0)
+Objections raised: 5
+Duration: 0.029s
+
+Final Protocol:
+  Sample size            180
+  Hospitals              5
+  Dosage                 75 mg
+  Dose arms (+placebo)   1
+  Trial duration         18 months
+  Budget allocated       $9.00M
+  Estimated cost         $8.68M
+  Power                  0.847
+  Alpha                  0.05
+  Randomization          stratified_block
+  Primary endpoint       continuous_biomarker
+  Hospital visits        4
+  Remote monitoring      True
+  Invasive procedures    1
+  Inclusion criteria     confirmed_diagnosis, age_18_to_75
+  Exclusion criteria     pregnancy, severe_renal_impairment, severe_hepatic_impairment
+  Safety monitoring      monthly
+  AE reporting           expedited_7_day
+  Projected enrolment    11.4 months
+  Version / status       v5 / APPROVED
+
+Constraint violations (independent checker): 0
+============================================================
+============================================================
+SINGLE-AGENT BASELINE
+============================================================
+
+Scenario: Budget Reduction
+Mode: single-agent baseline (mock)
+
+Architecture:
+  - one reasoning process with one blended objective (weights {'cost': 0.35, 'power': 0.25, 'safety': 0.2, 'burden': 0.2})
+  - required access to ALL four stakeholders' private constraints
+  - no negotiation, no vetoes, no per-stakeholder audit trail
+
+Generated Protocol:
+  Sample size            210
+  Hospitals              9
+  Dosage                 100 mg
+  Dose arms (+placebo)   1
+  Trial duration         18 months
+  Budget allocated       $10.60M
+  Estimated cost         $10.60M
+  Power                  0.782
+  Alpha                  0.05
+  Randomization          block
+  Primary endpoint       binary_response
+  Hospital visits        4
+  Remote monitoring      False
+  Invasive procedures    1
+  Inclusion criteria     confirmed_diagnosis, age_18_to_55, no_prior_therapy
+  Exclusion criteria     pregnancy, severe_renal_impairment, prior_cancer, bmi_over_35, concomitant_medication
+  Safety monitoring      monthly
+  AE reporting           standard_15_day
+  Projected enrolment    12.0 months
+  Version / status       v1 / GENERATED (no stakeholder approval)
+
+Constraint violations (independent checker): 8
+  - Sponsor: estimated_cost <= 9,000,000 (actual: 10600000)
+  - Biostatistician: power >= 0.80 (actual: 0.782)
+  - Ethics Committee: dosage <= 75.0 mg (actual: 100.0)
+  - Ethics Committee: AE reporting >= expedited_7_day (actual: standard_15_day)
+  - Ethics Committee: exclusions include ['pregnancy', 'severe_renal_impairment', 'severe_hepatic_impairment'] (actual: ['pregnancy', 'severe_renal_impairment', 'prior_cancer', 'bmi_over_35', 'concomitant_medication'])
+  - Ethics Committee: visits >= 8 unless remote monitoring (actual: 4)
+  - Patient Advocate: len(exclusion_criteria) <= 4 (actual: 5)
+  - Patient Advocate: no restrictive inclusions ['age_18_to_55', 'no_prior_therapy'] (actual: ['age_18_to_55', 'no_prior_therapy'])
+============================================================
+============================================================
+FINAL RESULT
+============================================================
+
+Status: CONSENSUS
+Negotiation rounds: 5
+Proposals: 10 (accepted 6, partially 4, rejected 0)
+Objections raised: 7
+Duration: 0.076s
+
+Final Protocol:
+  Sample size            210
+  Hospitals              12
+  Dosage                 50 mg
+  Dose arms (+placebo)   1
+  Trial duration         12 months
+  Budget allocated       $11.70M
+  Estimated cost         $11.61M
+  Power                  0.815
+  Alpha                  0.05
+  Randomization          stratified_block
+  Primary endpoint       continuous_biomarker
+  Hospital visits        4
+  Remote monitoring      True
+  Invasive procedures    1
+  Inclusion criteria     confirmed_diagnosis, age_18_to_75
+  Exclusion criteria     pregnancy, severe_renal_impairment, severe_hepatic_impairment, cardiac_arrhythmia
+  Safety monitoring      weekly
+  AE reporting           expedited_24h
+  Projected enrolment    5.8 months
+  Version / status       v5 / APPROVED
+
+Constraint violations (independent checker): 0
+============================================================
+============================================================
+SINGLE-AGENT BASELINE
+============================================================
+
+Scenario: High-Risk Drug
+Mode: single-agent baseline (mock)
+
+Architecture:
+  - one reasoning process with one blended objective (weights {'cost': 0.35, 'power': 0.25, 'safety': 0.2, 'burden': 0.2})
+  - required access to ALL four stakeholders' private constraints
+  - no negotiation, no vetoes, no per-stakeholder audit trail
+
+Generated Protocol:
+  Sample size            300
+  Hospitals              26
+  Dosage                 60 mg
+  Dose arms (+placebo)   1
+  Trial duration         12 months
+  Budget allocated       $17.08M
+  Estimated cost         $17.08M
+  Power                  0.802
+  Alpha                  0.05
+  Randomization          block
+  Primary endpoint       binary_response
+  Hospital visits        4
+  Remote monitoring      False
+  Invasive procedures    1
+  Inclusion criteria     confirmed_diagnosis, age_18_to_55, no_prior_therapy
+  Exclusion criteria     pregnancy, severe_renal_impairment, prior_cancer, bmi_over_35, concomitant_medication
+  Safety monitoring      monthly
+  AE reporting           standard_15_day
+  Projected enrolment    5.9 months
+  Version / status       v1 / GENERATED (no stakeholder approval)
+
+Constraint violations (independent checker): 9
+  - Sponsor: estimated_cost <= 15,000,000 (actual: 17080000)
+  - Sponsor: sample_size <= 220 (actual: 300)
+  - Ethics Committee: dosage <= 50.0 mg (actual: 60.0)
+  - Ethics Committee: monitoring >= weekly (actual: monthly)
+  - Ethics Committee: AE reporting >= expedited_24h (actual: standard_15_day)
+  - Ethics Committee: exclusions include ['pregnancy', 'severe_renal_impairment', 'severe_hepatic_impairment', 'cardiac_arrhythmia'] (actual: ['pregnancy', 'severe_renal_impairment', 'prior_cancer', 'bmi_over_35', 'concomitant_medication'])
+  - Ethics Committee: visits >= 10 unless remote monitoring (actual: 4)
+  - Patient Advocate: len(exclusion_criteria) <= 4 (actual: 5)
+  - Patient Advocate: no restrictive inclusions ['age_18_to_55', 'no_prior_therapy'] (actual: ['age_18_to_55', 'no_prior_therapy'])
+============================================================
+============================================================
+FINAL RESULT
+============================================================
+
+Status: CONSENSUS
+Negotiation rounds: 5
+Proposals: 9 (accepted 5, partially 4, rejected 0)
+Objections raised: 6
+Duration: 0.063s
+
+Final Protocol:
+  Sample size            190
+  Hospitals              13
+  Dosage                 75 mg
+  Dose arms (+placebo)   1
+  Trial duration         24 months
+  Budget allocated       $14.50M
+  Estimated cost         $13.72M
+  Power                  0.848
+  Alpha                  0.05
+  Randomization          stratified_block
+  Primary endpoint       binary_response
+  Hospital visits        6
+  Remote monitoring      True
+  Invasive procedures    1
+  Inclusion criteria     confirmed_diagnosis, age_18_to_75
+  Exclusion criteria     pregnancy, severe_renal_impairment, severe_hepatic_impairment
+  Safety monitoring      monthly
+  AE reporting           expedited_7_day
+  Projected enrolment    17.4 months
+  Version / status       v5 / APPROVED
+
+Constraint violations (independent checker): 0
+============================================================
+============================================================
+SINGLE-AGENT BASELINE
+============================================================
+
+Scenario: Rare Disease
+Mode: single-agent baseline (mock)
+
+Architecture:
+  - one reasoning process with one blended objective (weights {'cost': 0.35, 'power': 0.25, 'safety': 0.2, 'burden': 0.2})
+  - required access to ALL four stakeholders' private constraints
+  - no negotiation, no vetoes, no per-stakeholder audit trail
+
+Generated Protocol:
+  Sample size            180
+  Hospitals              20
+  Dosage                 75 mg
+  Dose arms (+placebo)   1
+  Trial duration         24 months
+  Budget allocated       $14.74M
+  Estimated cost         $14.74M
+  Power                  0.791
+  Alpha                  0.05
+  Randomization          block
+  Primary endpoint       binary_response
+  Hospital visits        4
+  Remote monitoring      False
+  Invasive procedures    1
+  Inclusion criteria     confirmed_diagnosis, age_18_to_55, no_prior_therapy
+  Exclusion criteria     pregnancy, severe_renal_impairment, prior_cancer, bmi_over_35, concomitant_medication
+  Safety monitoring      monthly
+  AE reporting           standard_15_day
+  Projected enrolment    17.3 months
+  Version / status       v1 / GENERATED (no stakeholder approval)
+
+Constraint violations (independent checker): 7
+  - Sponsor: sample_size <= eligible pool (169) (actual: 180)
+  - Biostatistician: power >= 0.80 (actual: 0.7908)
+  - Ethics Committee: AE reporting >= expedited_7_day (actual: standard_15_day)
+  - Ethics Committee: exclusions include ['pregnancy', 'severe_renal_impairment', 'severe_hepatic_impairment'] (actual: ['pregnancy', 'severe_renal_impairment', 'prior_cancer', 'bmi_over_35', 'concomitant_medication'])
+  - Ethics Committee: visits >= 8 unless remote monitoring (actual: 4)
+  - Patient Advocate: len(exclusion_criteria) <= 3 (actual: 5)
+  - Patient Advocate: no restrictive inclusions ['age_18_to_55', 'no_prior_therapy'] (actual: ['age_18_to_55', 'no_prior_therapy'])
+============================================================
+============================================================
+FINAL RESULT
+============================================================
+
+Status: CONSENSUS
+Negotiation rounds: 4
+Proposals: 9 (accepted 7, partially 2, rejected 0)
+Objections raised: 6
+Duration: 0.035s
+
+Final Protocol:
+  Sample size            180
+  Hospitals              7
+  Dosage                 40 mg
+  Dose arms (+placebo)   1
+  Trial duration         18 months
+  Budget allocated       $9.70M
+  Estimated cost         $9.16M
+  Power                  0.861
+  Alpha                  0.05
+  Randomization          stratified_block
+  Primary endpoint       continuous_biomarker
+  Hospital visits        3
+  Remote monitoring      True
+  Invasive procedures    1
+  Inclusion criteria     confirmed_diagnosis, age_6_to_17, parental_consent, child_assent
+  Exclusion criteria     pregnancy, severe_renal_impairment, severe_hepatic_impairment
+  Safety monitoring      biweekly
+  AE reporting           expedited_24h
+  Projected enrolment    8.2 months
+  Version / status       v4 / APPROVED
+
+Constraint violations (independent checker): 0
+============================================================
+============================================================
+SINGLE-AGENT BASELINE
+============================================================
+
+Scenario: Pediatric Trial
+Mode: single-agent baseline (mock)
+
+Architecture:
+  - one reasoning process with one blended objective (weights {'cost': 0.35, 'power': 0.25, 'safety': 0.2, 'burden': 0.2})
+  - required access to ALL four stakeholders' private constraints
+  - no negotiation, no vetoes, no per-stakeholder audit trail
+
+Generated Protocol:
+  Sample size            250
+  Hospitals              9
+  Dosage                 40 mg
+  Dose arms (+placebo)   1
+  Trial duration         18 months
+  Budget allocated       $11.76M
+  Estimated cost         $11.76M
+  Power                  0.798
+  Alpha                  0.05
+  Randomization          block
+  Primary endpoint       binary_response
+  Hospital visits        4
+  Remote monitoring      False
+  Invasive procedures    1
+  Inclusion criteria     confirmed_diagnosis, age_6_to_17, no_prior_therapy
+  Exclusion criteria     pregnancy, severe_renal_impairment, prior_cancer, bmi_over_35, concomitant_medication
+  Safety monitoring      monthly
+  AE reporting           standard_15_day
+  Projected enrolment    11.6 months
+  Version / status       v1 / GENERATED (no stakeholder approval)
+
+Constraint violations (independent checker): 10
+  - Sponsor: sample_size <= 220 (actual: 250)
+  - Biostatistician: power >= 0.80 (actual: 0.7981)
+  - Ethics Committee: monitoring >= biweekly (actual: monthly)
+  - Ethics Committee: AE reporting >= expedited_24h (actual: standard_15_day)
+  - Ethics Committee: exclusions include ['pregnancy', 'severe_renal_impairment', 'severe_hepatic_impairment'] (actual: ['pregnancy', 'severe_renal_impairment', 'prior_cancer', 'bmi_over_35', 'concomitant_medication'])
+  - Ethics Committee: inclusions include ['parental_consent', 'child_assent'] (actual: ['confirmed_diagnosis', 'age_6_to_17', 'no_prior_therapy'])
+  - Ethics Committee: visits >= 8 unless remote monitoring (actual: 4)
+  - Patient Advocate: len(exclusion_criteria) <= 4 (actual: 5)
+  - Patient Advocate: no restrictive inclusions ['age_18_to_55', 'no_prior_therapy'] (actual: ['no_prior_therapy'])
+  - Patient Advocate: remote_monitoring == True (actual: False)
+============================================================
+============================================================
+FINAL RESULT
+============================================================
+
+Status: CONSENSUS
+Negotiation rounds: 4
+Proposals: 9 (accepted 7, partially 2, rejected 0)
+Objections raised: 5
+Duration: 0.032s
+
+Final Protocol:
+  Sample size            180
+  Hospitals              7
+  Dosage                 75 mg
+  Dose arms (+placebo)   1
+  Trial duration         9 months
+  Budget allocated       $10.50M
+  Estimated cost         $9.97M
+  Power                  0.847
+  Alpha                  0.05
+  Randomization          stratified_block
+  Primary endpoint       continuous_biomarker
+  Hospital visits        6
+  Remote monitoring      True
+  Invasive procedures    1
+  Inclusion criteria     confirmed_diagnosis, age_18_to_75
+  Exclusion criteria     pregnancy, severe_renal_impairment, severe_hepatic_impairment
+  Safety monitoring      weekly
+  AE reporting           expedited_24h
+  Projected enrolment    4.9 months
+  Version / status       v4 / APPROVED
+
+Constraint violations (independent checker): 0
+============================================================
+============================================================
+SINGLE-AGENT BASELINE
+============================================================
+
+Scenario: Pandemic Trial
+Mode: single-agent baseline (mock)
+
+Architecture:
+  - one reasoning process with one blended objective (weights {'cost': 0.35, 'power': 0.25, 'safety': 0.2, 'burden': 0.2})
+  - required access to ALL four stakeholders' private constraints
+  - no negotiation, no vetoes, no per-stakeholder audit trail
+
+Generated Protocol:
+  Sample size            260
+  Hospitals              14
+  Dosage                 75 mg
+  Dose arms (+placebo)   1
+  Trial duration         9 months
+  Budget allocated       $12.17M
+  Estimated cost         $12.17M
+  Power                  0.798
+  Alpha                  0.05
+  Randomization          block
+  Primary endpoint       binary_response
+  Hospital visits        4
+  Remote monitoring      False
+  Invasive procedures    1
+  Inclusion criteria     confirmed_diagnosis, age_18_to_55, no_prior_therapy
+  Exclusion criteria     pregnancy, severe_renal_impairment, prior_cancer, bmi_over_35, concomitant_medication
+  Safety monitoring      monthly
+  AE reporting           standard_15_day
+  Projected enrolment    5.7 months
+  Version / status       v1 / GENERATED (no stakeholder approval)
+
+Constraint violations (independent checker): 8
+  - Sponsor: sample_size <= 220 (actual: 260)
+  - Biostatistician: power >= 0.80 (actual: 0.7983)
+  - Ethics Committee: monitoring >= weekly (actual: monthly)
+  - Ethics Committee: AE reporting >= expedited_24h (actual: standard_15_day)
+  - Ethics Committee: exclusions include ['pregnancy', 'severe_renal_impairment', 'severe_hepatic_impairment'] (actual: ['pregnancy', 'severe_renal_impairment', 'prior_cancer', 'bmi_over_35', 'concomitant_medication'])
+  - Ethics Committee: visits >= 8 unless remote monitoring (actual: 4)
+  - Patient Advocate: len(exclusion_criteria) <= 4 (actual: 5)
+  - Patient Advocate: no restrictive inclusions ['age_18_to_55', 'no_prior_therapy'] (actual: ['age_18_to_55', 'no_prior_therapy'])
+============================================================
+============================================================
+FINAL RESULT
+============================================================
+
+Status: CONSENSUS
+Negotiation rounds: 4
+Proposals: 9 (accepted 7, partially 2, rejected 0)
+Objections raised: 5
+Duration: 0.025s
+
+Final Protocol:
+  Sample size            180
+  Hospitals              6
+  Dosage                 75 mg
+  Dose arms (+placebo)   1
+  Trial duration         18 months
+  Budget allocated       $11.50M
+  Estimated cost         $10.87M
+  Power                  0.847
+  Alpha                  0.05
+  Randomization          stratified_block
+  Primary endpoint       continuous_biomarker
+  Hospital visits        4
+  Remote monitoring      True
+  Invasive procedures    1
+  Inclusion criteria     confirmed_diagnosis, age_18_to_75
+  Exclusion criteria     pregnancy, severe_renal_impairment, severe_hepatic_impairment, participation_in_other_trial
+  Safety monitoring      biweekly
+  AE reporting           expedited_7_day
+  Projected enrolment    10.0 months
+  Version / status       v4 / APPROVED
+
+Constraint violations (independent checker): 0
+============================================================
+============================================================
+SINGLE-AGENT BASELINE
+============================================================
+
+Scenario: Multi-Country Trial
+Mode: single-agent baseline (mock)
+
+Architecture:
+  - one reasoning process with one blended objective (weights {'cost': 0.35, 'power': 0.25, 'safety': 0.2, 'burden': 0.2})
+  - required access to ALL four stakeholders' private constraints
+  - no negotiation, no vetoes, no per-stakeholder audit trail
+
+Generated Protocol:
+  Sample size            260
+  Hospitals              12
+  Dosage                 75 mg
+  Dose arms (+placebo)   1
+  Trial duration         18 months
+  Budget allocated       $14.54M
+  Estimated cost         $14.54M
+  Power                  0.798
+  Alpha                  0.05
+  Randomization          block
+  Primary endpoint       binary_response
+  Hospital visits        4
+  Remote monitoring      False
+  Invasive procedures    1
+  Inclusion criteria     confirmed_diagnosis, age_18_to_55, no_prior_therapy
+  Exclusion criteria     pregnancy, severe_renal_impairment, prior_cancer, bmi_over_35, concomitant_medication
+  Safety monitoring      monthly
+  AE reporting           standard_15_day
+  Projected enrolment    11.1 months
+  Version / status       v1 / GENERATED (no stakeholder approval)
+
+Constraint violations (independent checker): 8
+  - Sponsor: sample_size <= 220 (actual: 260)
+  - Biostatistician: power >= 0.80 (actual: 0.7983)
+  - Ethics Committee: monitoring >= biweekly (actual: monthly)
+  - Ethics Committee: AE reporting >= expedited_7_day (actual: standard_15_day)
+  - Ethics Committee: exclusions include ['pregnancy', 'severe_renal_impairment', 'severe_hepatic_impairment', 'participation_in_other_trial'] (actual: ['pregnancy', 'severe_renal_impairment', 'prior_cancer', 'bmi_over_35', 'concomitant_medication'])
+  - Ethics Committee: visits >= 8 unless remote monitoring (actual: 4)
+  - Patient Advocate: len(exclusion_criteria) <= 4 (actual: 5)
+  - Patient Advocate: no restrictive inclusions ['age_18_to_55', 'no_prior_therapy'] (actual: ['age_18_to_55', 'no_prior_therapy'])
+============================================================
+============================================================
+FINAL RESULT
+============================================================
+
+Status: CONSENSUS
+Negotiation rounds: 3
+Proposals: 3 (accepted 3, partially 0, rejected 0)
+Objections raised: 1
+Duration: 0.021s
+
+Final Protocol:
+  Sample size            215
+  Hospitals              6
+  Dosage                 50 mg
+  Dose arms (+placebo)   1
+  Trial duration         18 months
+  Budget allocated       $12.40M
+  Estimated cost         $12.27M
+  Power                  0.824
+  Alpha                  0.05
+  Randomization          stratified_block
+  Primary endpoint       continuous_biomarker
+  Hospital visits        6
+  Remote monitoring      True
+  Invasive procedures    1
+  Inclusion criteria     confirmed_diagnosis, age_18_to_75
+  Exclusion criteria     pregnancy, severe_renal_impairment, severe_hepatic_impairment, prior_cancer
+  Safety monitoring      weekly
+  AE reporting           expedited_24h
+  Projected enrolment    11.9 months
+  Version / status       v3 / APPROVED
+
+Constraint violations (independent checker): 0
+============================================================
+============================================================
+SINGLE-AGENT BASELINE
+============================================================
+
+Scenario: Unexpected Interim Results
+Mode: single-agent baseline (mock)
+
+Architecture:
+  - one reasoning process with one blended objective (weights {'cost': 0.35, 'power': 0.25, 'safety': 0.2, 'burden': 0.2})
+  - required access to ALL four stakeholders' private constraints
+  - no negotiation, no vetoes, no per-stakeholder audit trail
+
+Generated Protocol:
+  Sample size            200
+  Hospitals              6
+  Dosage                 50 mg
+  Dose arms (+placebo)   1
+  Trial duration         18 months
+  Budget allocated       $9.32M
+  Estimated cost         $9.32M
+  Power                  0.796
+  Alpha                  0.05
+  Randomization          stratified_block
+  Primary endpoint       continuous_biomarker
+  Hospital visits        4
+  Remote monitoring      False
+  Invasive procedures    1
+  Inclusion criteria     confirmed_diagnosis, age_18_to_75
+  Exclusion criteria     pregnancy, severe_renal_impairment, severe_hepatic_impairment, prior_cancer
+  Safety monitoring      monthly
+  AE reporting           expedited_7_day
+  Projected enrolment    11.1 months
+  Version / status       v1 / GENERATED (no stakeholder approval)
+
+Constraint violations (independent checker): 4
+  - Biostatistician: power >= 0.80 (actual: 0.7957)
+  - Ethics Committee: monitoring >= weekly (actual: monthly)
+  - Ethics Committee: AE reporting >= expedited_24h (actual: expedited_7_day)
+  - Ethics Committee: visits >= 8 unless remote monitoring (actual: 4)
+============================================================
+============================================================
+MULTI-AGENT vs SINGLE-AGENT
+============================================================
+Scenario              MAS status     Rounds MAS viol.  Single viol.
+-------------------------------------------------------------------
+baseline              CONSENSUS           4         0             7
+budget_reduction      CONSENSUS           5         0             8
+high_risk_drug        CONSENSUS           5         0             9
+rare_disease          CONSENSUS           5         0             7
+pediatric             CONSENSUS           4         0            10
+pandemic              CONSENSUS           4         0             8
+multi_country         CONSENSUS           4         0             8
+unexpected_interim    CONSENSUS           3         0             4
+
+Single agent: 1 reasoning process, blended objective, saw ALL private constraints, no vetoes.
+Multi-agent : 4 independent processes, private constraints, explicit negotiation, vetoes.
+============================================================
+
+Outputs saved to: D:\Sem 7\FOAI\FOAI case study\clinical_trial_mas\outputs

@@ -143,7 +143,7 @@ It is an environment-level auditor and the only object that holds every agent's 
 
 | Key | Setup | Research question |
 |---|---|---|
-| `baseline` | 320 patients, 2 dose arms, 100 mg, 12 visits, 3 invasive procedures, $15M | can hidden-constraint agents agree? |
+| `baseline` | 320 patients (real P92), 10 hospitals, 2 dose arms, 100 mg, 12 visits, 3 invasive procedures, $15M | can hidden-constraint agents agree? |
 | `budget_reduction` | budget cut 40 % ($9M) | valid, safe protocol under tight cost? |
 | `high_risk_drug` | severe side effects, lower dose limit, weekly monitoring; sponsor wants ≤ 14 months | does the IRB resist acceleration? |
 | `rare_disease` | ~260 eligible patients, slow recruitment | relaxed eligibility vs minimum sample? |
@@ -198,39 +198,48 @@ python main.py --mode compare --scenario all    # MAS vs single agent on every s
 python main.py --summary                        # final result only
 python main.py --llm                            # LLM reasoning (falls back to mock without a key)
 python main.py --help
+streamlit run app.py                            # web UI (pip install streamlit)
+python fetch_real_data.py --pages 5             # refresh real Phase II data (needs internet)
 pytest -q                                       # tests
 ```
 
 Outputs per run: `outputs/<scenario>.json`, `outputs/<scenario>.txt`, `outputs/<scenario>_events.jsonl`
 (and `<scenario>_single_agent.json` for the baseline).
 
-## 15. Example output (baseline, mock mode — abridged)
+## 15. Example output (baseline, mock mode - abridged)
+
+Round 1: the IRB lowers the dose to 75 mg (binding); the Sponsor's cut from 320 to 180 patients is blocked
+(power 0.64); the Advocate's visit cut is blocked until the Sponsor funds remote monitoring. Round 2: levers
+restore power and 180 patients / 4 visits are accepted; consensus in round 4.
 
 ```
-Round 1  (reviewing protocol v1)
-Sponsor: COUNTER_PROPOSE
-  Reason: Dropping a dose arm cuts drug-supply and site costs. Reducing the sample size lowers per-patient cost. ...
-  Proposes: dosage_arms=1; sample_size=180; number_of_hospitals=8
-Biostatistician: COUNTER_PROPOSE
-  Reason: Switching to a more sensitive primary endpoint recovers statistical power.
-Ethics Committee: COUNTER_PROPOSE
-  Reason: The proposed dosage exceeds my safety requirements; I am lowering it to a safer level. ...
-Patient Advocate: COUNTER_PROPOSE
-  Reason: The visit schedule is too burdensome; I propose a lighter schedule. Remote monitoring would let ...
-  Proposal outcomes:
-   - Ethics Committee: ACCEPTED  (dosage=75 ...; objections from others overridden)
-   - Sponsor: PARTIALLY_ACCEPTED  blocked: sample_size=180
-       objection: Biostatistician: Statistical power would be too low; the study would be underpowered.
-   - Patient Advocate: PARTIALLY_ACCEPTED  blocked: hospital_visits=6
-       objection: Ethics Committee: Fewer in-person visits without remote safety monitoring would leave participants under-observed.
-Round 2
-Sponsor: COUNTER_PROPOSE  -> sample_size=180; remote_monitoring=True; number_of_hospitals=6   (ACCEPTED)
-Biostatistician: COUNTER_PROPOSE -> randomization_scheme=stratified_block                    (ACCEPTED)
-Patient Advocate: COUNTER_PROPOSE -> hospital_visits=4                                        (ACCEPTED)
-...
-FINAL RESULT
-Status: CONSENSUS        Negotiation rounds: 4        Constraint violations: 0
-Sample size 180 | Dosage 75 mg | 1 dose arm | Power 0.847 | Cost $9.01M | Visits 4 + remote monitoring
+Status: CONSENSUS
+Negotiation rounds: 4
+Proposals: 9 (accepted 7, partially 2, rejected 0)
+Objections raised: 5
+Duration: 0.064s
+
+Final Protocol:
+  Sample size            180
+  Hospitals              6
+  Dosage                 75 mg
+  Dose arms (+placebo)   1
+  Trial duration         18 months
+  Budget allocated       $9.50M
+  Estimated cost         $9.01M
+  Power                  0.847
+  Alpha                  0.05
+  Randomization          stratified_block
+  Primary endpoint       continuous_biomarker
+  Hospital visits        4
+  Remote monitoring      True
+  Invasive procedures    1
+  Inclusion criteria     confirmed_diagnosis, age_18_to_75
+  Exclusion criteria     pregnancy, severe_renal_impairment, severe_hepatic_impairment
+  Safety monitoring      monthly
+  AE reporting           expedited_7_day
+  Projected enrolment    9.5 months
+  Version / status       v4 / APPROVED
 ```
 
 `--mode compare --scenario all` (mock):
@@ -363,10 +372,10 @@ One module per concern; adding an agent = subclass `Agent` + a prompt file + a `
 `Protocol` dataclass (`models.py`): sample_size, number_of_hospitals, dosage, dosage_arms, trial_duration_months, budget, power, alpha, randomization_scheme, primary_endpoint, hospital_visits, remote_monitoring, invasive_procedures, inclusion/exclusion criteria, safety_monitoring, adverse_event_reporting. Each agent holds a `PrivateState`. Decisions are `AgentDecision`, amendments `Proposal`, rounds `NegotiationRound`. A scenario = initial protocol + trial context + private states.
 
 ### Dataset
-No external dataset. All parameters are **synthetic** and defined in `scenarios.py`; `trial_tools.py` uses simplified analytic models. No patient data.
+The scenarios are **synthetic**, defined in `scenarios.py` with the starting values of the case-study report (320 patients, Sponsor cap 220 / target 180, 10 hospitals, 2 arms, 18 months). They are **validated against real data**: 5,000 completed Phase II interventional trials fetched from the ClinicalTrials.gov API v2 (`fetch_real_data.py`, accessed 2026-10-14; rows in `data/phase2_trials.csv`, statistics in `data/phase2_summary.json`, helper `real_data.py`). Position of the starting values in the real distribution: 320 patients = 92nd percentile, cap 220 = 88th, target 180 = 83rd, 10 hospitals = 54th percentile of multi-site trials, 18 months = 29th percentile; 2 arms is the real median. Real medians: enrolment 56 (IQR 29-122), duration 32 months (IQR 16-57). So the baseline is a deliberately large, expensive Phase II draft, and its reduced final protocol (180) is still above the real 80th percentile. Cost per patient, dose-response and thresholds are not in the registry (cost model after Sertkaya et al. 2016; thresholds after ICH E9). No patient-level data.
 
 ### User interface
-Command-line (`main.py`): `--mode`, `--scenario`, `--llm`, `--max-rounds`, `--no-transcript`, `--summary`, `--output-dir`, `--verbose`. Output: readable transcript + final result, saved to `outputs/`.
+Web UI (`streamlit run app.py`): scenario picker, round-by-round negotiation view, protocol evolution charts, single-vs-multi-agent comparison and constraint audit. Command-line (`main.py`): `--mode`, `--scenario`, `--llm`, `--max-rounds`, `--no-transcript`, `--summary`, `--output-dir`, `--verbose`. Output: readable transcript + final result, saved to `outputs/`.
 
 ## E. Testing and results
 
@@ -385,18 +394,18 @@ Result: **96 passed** (`pytest -q`).
 
 ### Scenario results (mock mode)
 
-| Scenario | Rounds | Violations | Sample | Dose | Power | Budget |
-|---|---|---|---|---|---|---|
-| baseline | 4 | 0 | 180 | 75 | 0.847 | $9.5M |
-| budget_reduction | 5 | 0 | 180 | 75 | 0.847 | $9.0M |
-| high_risk_drug | 5 | 0 | 210 | 50 | 0.815 | $11.7M |
-| rare_disease | 5 | 0 | 190 | 75 | 0.848 | $14.5M |
-| pediatric | 4 | 0 | 180 | 40 | 0.861 | $9.7M |
-| pandemic | 4 | 0 | 180 | 75 | 0.847 | $10.5M |
-| multi_country | 4 | 0 | 180 | 75 | 0.847 | $11.5M |
-| unexpected_interim | 3 | 0 | 215 | 50 | 0.824 | $12.4M |
+| Scenario | Rounds | Violations | Sample | Hospitals | Dose | Power | Budget |
+|---|---|---|---|---|---|---|---|
+| baseline | 4 | 0 | 180 | 6 | 75 | 0.847 | $9.5M |
+| budget_reduction | 5 | 0 | 180 | 5 | 75 | 0.847 | $9.0M |
+| high_risk_drug | 5 | 0 | 210 | 12 | 50 | 0.815 | $11.7M |
+| rare_disease | 5 | 0 | 190 | 13 | 75 | 0.848 | $14.5M |
+| pediatric | 4 | 0 | 180 | 7 | 40 | 0.861 | $9.7M |
+| pandemic | 4 | 0 | 180 | 7 | 75 | 0.847 | $10.5M |
+| multi_country | 4 | 0 | 180 | 6 | 75 | 0.847 | $11.5M |
+| unexpected_interim | 3 | 0 | 215 | 6 | 50 | 0.824 | $12.4M |
 
 ### Screenshots
 See `docs/screenshots/`:
-`01_baseline_round1.png`, `02_baseline_final.png`, `03_compare.png`, `04_pytest.png`, `05_high_risk.png`, `06_single_agent.png`.
+`01_baseline_round1.png`, `02_baseline_final.png`, `03_compare.png`, `04_pytest.png`, `05_high_risk.png`, `06_single_agent.png`; web UI: `ui_00_start.png`, `ui_01_negotiation.png`, `ui_02_protocol.png`, `ui_03_comparison.png`, `ui_04_audit.png`.
 

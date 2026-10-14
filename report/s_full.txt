@@ -125,7 +125,7 @@ Status: CONSENSUS
 Negotiation rounds: 4
 Proposals: 9 (accepted 7, partially 2, rejected 0)
 Objections raised: 5
-Duration: 0.008s
+Duration: 0.032s
 
 Final Protocol:
   Sample size            180

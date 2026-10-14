@@ -1,0 +1,101 @@
+{
+  "source": "ClinicalTrials.gov API v2",
+  "accessed": "2026-10-14",
+  "filter": "Phase 2, interventional, completed",
+  "all": {
+    "subset": "all Phase II",
+    "trials": 5000,
+    "enrollment": {
+      "n": 4875,
+      "median": 56,
+      "q1": 29.0,
+      "q3": 122.0,
+      "mean": 157.9
+    },
+    "duration_months": {
+      "n": 4767,
+      "median": 32.0,
+      "q1": 16.0,
+      "q3": 56.6,
+      "mean": 41.4
+    },
+    "arms": {
+      "n": 4395,
+      "median": 2,
+      "q1": 1.0,
+      "q3": 3.0,
+      "mean": 2.3
+    },
+    "sites": {
+      "n": 4717,
+      "median": 1,
+      "q1": 1.0,
+      "q3": 9.0,
+      "mean": 11.3
+    }
+  },
+  "pediatric": {
+    "subset": "children only",
+    "trials": 212,
+    "enrollment": {
+      "n": 210,
+      "median": 77.0,
+      "q1": 32.0,
+      "q3": 160.0,
+      "mean": 188.1
+    },
+    "duration_months": {
+      "n": 206,
+      "median": 29.0,
+      "q1": 15.124999999999998,
+      "q3": 48.25,
+      "mean": 36.4
+    },
+    "arms": {
+      "n": 189,
+      "median": 2,
+      "q1": 2.0,
+      "q3": 3.0,
+      "mean": 2.4
+    },
+    "sites": {
+      "n": 193,
+      "median": 1,
+      "q1": 1.0,
+      "q3": 7.0,
+      "mean": 8.4
+    }
+  },
+  "adult": {
+    "subset": "includes adults",
+    "trials": 4745,
+    "enrollment": {
+      "n": 4624,
+      "median": 56.0,
+      "q1": 29.0,
+      "q3": 120.0,
+      "mean": 154.2
+    },
+    "duration_months": {
+      "n": 4521,
+      "median": 32.1,
+      "q1": 16.0,
+      "q3": 57.0,
+      "mean": 41.6
+    },
+    "arms": {
+      "n": 4173,
+      "median": 2,
+      "q1": 1.0,
+      "q3": 3.0,
+      "mean": 2.3
+    },
+    "sites": {
+      "n": 4481,
+      "median": 1,
+      "q1": 1.0,
+      "q3": 9.0,
+      "mean": 11.5
+    }
+  }
+}
