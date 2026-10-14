@@ -1,0 +1,354 @@
+from pptx import Presentation
+from pptx.util import Inches, Pt
+from pptx.dml.color import RGBColor
+from pptx.enum.shapes import MSO_SHAPE
+from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
+from pptx.chart.data import CategoryChartData
+from pptx.enum.chart import XL_CHART_TYPE
+
+BG, CARD, CYAN, VIOLET, ORANGE, MUTED, WHITE = (
+    '080D18', '0D1424', '00E5FF', '8B5CF6', 'FF6B35', '98A6B8', 'FFFFFF')
+HEAD, BODY, MONO = 'Space Grotesk', 'Inter', 'JetBrains Mono'
+SHOT = 'clinical_trial_mas/docs/screenshots/'
+
+
+def rgb(h):
+    return RGBColor.from_string(h)
+
+
+prs = Presentation()
+prs.slide_width, prs.slide_height = Inches(13.333), Inches(7.5)
+BLANK = prs.slide_layouts[6]
+
+
+def slide(notes=''):
+    s = prs.slides.add_slide(BLANK)
+    s.background.fill.solid()
+    s.background.fill.fore_color.rgb = rgb(BG)
+    if notes:
+        s.notes_slide.notes_text_frame.text = notes
+    return s
+
+
+def box(s, x, y, w, h, fill=CARD, line=None, shape=MSO_SHAPE.ROUNDED_RECTANGLE):
+    sh = s.shapes.add_shape(shape, Inches(x), Inches(y), Inches(w), Inches(h))
+    sh.fill.solid()
+    sh.fill.fore_color.rgb = rgb(fill)
+    if line:
+        sh.line.color.rgb = rgb(line)
+        sh.line.width = Pt(1)
+    else:
+        sh.line.fill.background()
+    if shape == MSO_SHAPE.ROUNDED_RECTANGLE:
+        sh.adjustments[0] = 0.06
+    sh.shadow.inherit = False
+    return sh
+
+
+def text(s, x, y, w, h, t, size=14, color=WHITE, bold=False, font=BODY, align=PP_ALIGN.LEFT,
+         anchor=MSO_ANCHOR.TOP):
+    tb = s.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
+    tf = tb.text_frame
+    tf.word_wrap = True
+    tf.margin_left = tf.margin_right = Inches(0.05)
+    tf.margin_top = tf.margin_bottom = Inches(0.03)
+    tf.vertical_anchor = anchor
+    lines = t if isinstance(t, list) else [t]
+    for i, ln in enumerate(lines):
+        p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+        p.alignment = align
+        p.space_after = Pt(4)
+        r = p.add_run()
+        r.text = ln
+        r.font.size = Pt(size)
+        r.font.bold = bold
+        r.font.name = font
+        r.font.color.rgb = rgb(color)
+    return tb
+
+
+def header(s, tag, title):
+    text(s, 0.6, 0.35, 12, 0.35, tag, 12, CYAN, True, MONO)
+    text(s, 0.6, 0.7, 12.1, 0.75, title, 30, WHITE, True, HEAD)
+
+
+def table(s, x, y, w, rows, colw, size=12, rowh=0.38, head=VIOLET):
+    shp = s.shapes.add_table(len(rows), len(rows[0]), Inches(x), Inches(y), Inches(w),
+                             Inches(rowh * len(rows)))
+    tbl = shp.table
+    tblPr = shp._element.graphic.graphicData.tbl.tblPr
+    tblPr.set('firstRow', '0')
+    tblPr.set('bandRow', '0')
+    for j, cw in enumerate(colw):
+        tbl.columns[j].width = Inches(cw)
+    for i, r in enumerate(rows):
+        tbl.rows[i].height = Inches(rowh)
+        for j, v in enumerate(r):
+            c = tbl.cell(i, j)
+            c.fill.solid()
+            c.fill.fore_color.rgb = rgb(head if i == 0 else (CARD if i % 2 else '111A2E'))
+            c.margin_left = c.margin_right = Inches(0.08)
+            c.margin_top = c.margin_bottom = Inches(0.03)
+            c.vertical_anchor = MSO_ANCHOR.MIDDLE
+            tf = c.text_frame
+            tf.word_wrap = True
+            p = tf.paragraphs[0]
+            run = p.add_run()
+            run.text = str(v)
+            run.font.size = Pt(size)
+            run.font.name = BODY
+            run.font.bold = (i == 0) or (j == 0)
+            run.font.color.rgb = rgb(WHITE if i == 0 else (CYAN if j == 0 else 'E6EBF2'))
+    return tbl
+
+
+def card(s, x, y, w, h, title, lines, accent=CYAN, size=12):
+    box(s, x, y, w, h, CARD, '1F2A44')
+    text(s, x + 0.15, y + 0.1, w - 0.3, 0.4, title, 15, accent, True, HEAD)
+    text(s, x + 0.15, y + 0.55, w - 0.3, h - 0.65, lines, size, 'E6EBF2')
+
+
+# ---------------------------------------------------------------- 1 title
+s = slide('One-line pitch: four agents with private constraints negotiate one Phase II protocol; an independent '
+          'checker audits every version. Replace the presenter line with names and roll numbers.')
+text(s, 0.8, 1.3, 11, 0.4, 'FOAI 23CSE401  |  CASE STUDY REVIEW 1', 14, CYAN, True, MONO)
+text(s, 0.8, 1.9, 11.5, 1.8, 'Multi-Agent Clinical Trial Protocol Negotiation', 46, WHITE, True, HEAD)
+text(s, 0.8, 3.8, 11, 0.8, 'Autonomous AI agents with hidden objectives negotiating one Phase II protocol', 20,
+     MUTED)
+for i, (ini, col) in enumerate([('S', CYAN), ('B', VIOLET), ('E', ORANGE), ('P', '2DD4BF')]):
+    c = box(s, 0.9 + i * 0.9, 4.9, 0.7, 0.7, col, None, MSO_SHAPE.OVAL)
+    text(s, 0.9 + i * 0.9, 4.95, 0.7, 0.6, ini, 22, BG, True, HEAD, PP_ALIGN.CENTER, MSO_ANCHOR.MIDDLE)
+text(s, 0.8, 6.0, 12, 0.4,
+     'Druva Teja Korlakunta (CB.SC.U4CSE23317)  |  Manvitha Dungi (CB.SC.U4CSE23318)  |  Semester 7', 14, WHITE)
+text(s, 0.8, 6.5, 12, 0.4, 'Academic simulation only. All trial parameters, costs and constraints are synthetic.',
+     12, MUTED)
+
+# ---------------------------------------------------------------- 2 overview
+s = slide('Real protocol design is a negotiation. A single model gives one averaged answer, needs every party\'s '
+          'secrets in one place and offers no veto.')
+header(s, '02  //  INTRODUCTION', 'Four stakeholders, one protocol, hidden limits')
+ag = [('Sponsor', 'Minimum cost and time', 'Private: budget ceiling, sample cap, max duration', CYAN),
+      ('Biostatistician', 'Statistical validity', 'Private: power >= 80%, alpha 0.05', VIOLET),
+      ('Ethics Committee', 'Participant safety (veto)', 'Private: max dosage, monitoring, AE reporting', ORANGE),
+      ('Patient Advocate', 'Less burden, more access', 'Private: max visits, procedures, exclusions', '2DD4BF')]
+for i, (n, o, p, col) in enumerate(ag):
+    x = 0.6 + i * 3.1
+    box(s, x, 1.7, 2.9, 2.3, CARD, '1F2A44')
+    text(s, x + 0.15, 1.8, 2.6, 0.4, n, 17, col, True, HEAD)
+    text(s, x + 0.15, 2.3, 2.6, 0.5, o, 14, WHITE, True)
+    text(s, x + 0.15, 2.95, 2.6, 0.9, p, 12, MUTED)
+card(s, 0.6, 4.3, 5.9, 2.6, 'Single agent',
+     ['One blended, weighted objective', 'Must be given every private constraint',
+      'No disagreement, no veto, no audit trail'], ORANGE, 14)
+card(s, 6.8, 4.3, 5.9, 2.6, 'Our multi-agent system',
+     ['Four independent reasoning processes', 'Each agent sees only its own constraints',
+      'Explicit objections, IRB veto, all four must approve', 'Independent Constraint Checker audits every version'],
+     CYAN, 14)
+
+# ---------------------------------------------------------------- 3 PEAS
+s = slide('System-level PEAS. Performance is measured by the independent Constraint Checker, not by the agents.')
+header(s, '03  //  PEAS FORMULATION', 'PEAS, metrics and input / output mapping')
+table(s, 0.6, 1.6, 12.1, [
+    ['', 'Description'],
+    ['Performance', 'Consensus (4 approve) | 0 constraint violations | rounds | proposals accepted vs blocked | '
+                    'power >= 0.80 | cost <= budget'],
+    ['Environment', 'Shared protocol + public history, public calculators (power, cost, recruitment), guarded '
+                    'private state'],
+    ['Actuators', 'APPROVE / REJECT / COUNTER_PROPOSE, amendments to own fields, qualitative requests, objections'],
+    ['Sensors', 'Protocol version, public history, public tool report, feedback on own proposals, own constraints']],
+    [1.9, 10.2], 12, 0.52)
+table(s, 0.6, 4.35, 12.1, [
+    ['Agent', 'Input (sensor)', 'Output (actuator)'],
+    ['Sponsor', 'Protocol, power/cost report, blocked-proposal feedback, budget/sample/duration limits',
+     'sample, hospitals, dose arms, budget, remote monitoring'],
+    ['Biostatistician', 'Protocol, power report, power/alpha limits, locked fields',
+     'sample, randomisation, endpoint, alpha'],
+    ['Ethics (IRB)', 'Protocol, max dose, monitoring and AE rules', 'dosage, monitoring, AE, exclusions (veto)'],
+    ['Patient Advocate', 'Protocol, max visits/procedures/exclusions',
+     'inclusion, visits, procedures, remote request (advisory)']],
+    [1.9, 6.0, 4.2], 11, 0.44)
+
+# ---------------------------------------------------------------- 4 env + agent
+s = slide('Classification follows Russell and Norvig. Mock mode is deterministic; LLM mode is stochastic.')
+header(s, '04  //  ENVIRONMENT & AGENT ANALYSIS', 'Environment classification and agent category')
+table(s, 0.6, 1.6, 7.0, [
+    ['Property', 'Classification'],
+    ['Observability', 'Partially observable (peer limits hidden)'],
+    ['Agents', 'Multi-agent, mixed cooperative / competitive'],
+    ['Determinism', 'Deterministic (mock); stochastic (LLM)'],
+    ['Episodic?', 'Sequential: each round builds on the last'],
+    ['Static / dynamic', 'Static between rounds; changes via amendments'],
+    ['Discrete / continuous', 'Discrete time; integer and bounded numeric'],
+    ['Known / unknown', 'Known rules, hidden peer constraints']], [2.4, 4.6], 12, 0.5)
+cards = [('Sponsor', 'Goal-based + learning: infers hidden power bar from blocked cuts', 'Blocking vote', CYAN),
+         ('Biostatistician', 'Goal-based, model-based: design levers first', 'Blocking vote', VIOLET),
+         ('Ethics Committee', 'Goal-based, safety-critical: binding amendments', 'Veto', ORANGE),
+         ('Patient Advocate', 'Goal-based: burden and access, asks for remote monitoring', 'Advisory', '2DD4BF')]
+for i, (n, d, a, col) in enumerate(cards):
+    y = 1.6 + i * 1.28
+    box(s, 7.9, y, 4.8, 1.15, CARD, '1F2A44')
+    text(s, 8.05, y + 0.05, 3.2, 0.35, n, 14, col, True, HEAD)
+    text(s, 11.0, y + 0.05, 1.6, 0.35, a, 11, WHITE, True, MONO, PP_ALIGN.RIGHT)
+    text(s, 8.05, y + 0.42, 4.5, 0.7, d, 12, 'E6EBF2')
+text(s, 0.6, 5.8, 7.0, 0.9,
+     'Category: deliberative goal-based, utility-oriented rational agents; the system is a mixed '
+     'cooperative-competitive MAS with heterogeneous authority.', 13, MUTED)
+
+# ---------------------------------------------------------------- 5 design
+s = slide('The Constraint Checker is the only component that holds all constraints; its audit goes to the log, '
+          'not to the agents.')
+header(s, '05  //  DESIGN', 'Architecture, tools and requirements')
+box(s, 0.6, 1.6, 7.2, 0.6, CARD, CYAN)
+text(s, 0.7, 1.65, 7.0, 0.5, 'Environment: shared protocol, history, public calculators', 13, CYAN, True,
+     anchor=MSO_ANCHOR.MIDDLE)
+for i, (n, col) in enumerate([('Sponsor', CYAN), ('Biostatistician', VIOLET), ('IRB', ORANGE),
+                              ('Advocate', '2DD4BF')]):
+    x = 0.6 + i * 1.82
+    box(s, x, 2.5, 1.72, 0.9, CARD, col)
+    text(s, x, 2.5, 1.72, 0.55, n, 13, col, True, HEAD, PP_ALIGN.CENTER, MSO_ANCHOR.MIDDLE)
+    text(s, x, 2.95, 1.72, 0.4, 'private state', 10, MUTED, False, MONO, PP_ALIGN.CENTER)
+box(s, 0.6, 3.7, 7.2, 0.6, CARD, VIOLET)
+text(s, 0.7, 3.75, 7.0, 0.5, 'Negotiation Engine: reviews, proposals, objections', 13, WHITE, True,
+     anchor=MSO_ANCHOR.MIDDLE)
+box(s, 0.6, 4.6, 3.5, 0.6, CARD, ORANGE)
+text(s, 0.7, 4.65, 3.3, 0.5, 'Constraint Checker (audit)', 13, ORANGE, True, anchor=MSO_ANCHOR.MIDDLE)
+box(s, 4.3, 4.6, 3.5, 0.6, CARD, '2DD4BF')
+text(s, 4.4, 4.65, 3.3, 0.5, 'Consensus / Deadlock / Failure', 13, '2DD4BF', True, anchor=MSO_ANCHOR.MIDDLE)
+text(s, 0.6, 5.5, 7.2, 1.5,
+     ['Modules: environment, agents, negotiation, constraints, trial_tools, scenarios, models, llm, logger, main',
+      'New agent = subclass + prompt + private state; new scenario = one function'], 12, MUTED)
+table(s, 8.2, 1.6, 4.5, [
+    ['Requirement', 'Detail'],
+    ['Hardware', 'Any PC, 4 GB RAM, no GPU'],
+    ['OS', 'Windows / Linux / macOS'],
+    ['Language', 'Python 3.10+'],
+    ['Runtime', 'Standard library only'],
+    ['Tests', 'pytest'],
+    ['LLM (opt.)', 'OpenAI-compatible API, Ollama, LM Studio'],
+    ['Prompts', 'prompts/*.txt, one per role']], [1.5, 3.0], 12, 0.56)
+
+# ---------------------------------------------------------------- 6 algorithms
+s = slide('Variables are protocol fields, domains their allowed values, constraints each agent\'s private limits.')
+header(s, '06  //  ALGORITHMS & SEARCH STRATEGY', 'Negotiation as distributed constraint satisfaction')
+steps = [('1 Review', 'All agents review the same public snapshot'),
+         ('2 Decide', 'APPROVE, REJECT or COUNTER_PROPOSE'),
+         ('3 Order', 'IRB, Sponsor, Biostatistician, Advocate'),
+         ('4 Cross-check', 'Others test the copy against own limits'),
+         ('5 Split', 'Blocked proposal retried field by field'),
+         ('6 Commit', 'New version, audited by the checker')]
+for i, (a, b) in enumerate(steps):
+    x = 0.6 + (i % 3) * 4.1
+    y = 1.6 + (i // 3) * 1.25
+    box(s, x, y, 3.9, 1.1, CARD, '1F2A44')
+    text(s, x + 0.12, y + 0.05, 3.6, 0.35, a, 14, CYAN, True, HEAD)
+    text(s, x + 0.12, y + 0.45, 3.6, 0.6, b, 12, 'E6EBF2')
+text(s, 0.6, 4.2, 12, 0.35, 'Stops on CONSENSUS (all approve)  |  DEADLOCK (unchanged 2 rounds)  |  '
+     'NO_CONSENSUS (10 rounds)', 12, ORANGE, True, MONO)
+card(s, 0.6, 4.75, 4.0, 2.2, 'Sponsor',
+     ['Bounded linear search on sample size', 'Learned bound = blocked power + 0.05'], CYAN)
+card(s, 4.8, 4.75, 4.0, 2.2, 'Biostatistician',
+     ['Cheapest lever first: endpoint, randomisation, then more patients'], VIOLET)
+card(s, 9.0, 4.75, 3.7, 2.2, 'Baseline',
+     ['Grid search over 16,740 protocols', 'Weighted sum: cost .35, power .25, safety .20, burden .20'], ORANGE)
+
+# ---------------------------------------------------------------- 7 implementation
+s = slide('All data is synthetic; no patient data is used.')
+header(s, '07  //  IMPLEMENTATION', 'Input representation, data and interface')
+card(s, 0.6, 1.6, 6.0, 2.5, 'Input representation',
+     ['Protocol dataclass: sample size, hospitals, dosage, arms, duration, budget, power, alpha, randomisation, '
+      'endpoint, visits, remote monitoring, procedures, inclusion / exclusion, monitoring, AE reporting',
+      'PrivateState per agent; Proposal, AgentDecision, NegotiationRound'], CYAN, 12)
+card(s, 6.8, 1.6, 5.9, 2.5, 'Dataset',
+     ['No external dataset; 8 synthetic scenarios in scenarios.py',
+      'Simplified analytic power, cost and recruitment models in trial_tools.py',
+      'No patient data'], VIOLET, 12)
+card(s, 0.6, 4.3, 6.0, 2.6, 'User interface (CLI)',
+     ['--mode multi-agent | baseline | compare', '--scenario <name> | all', '--llm, --max-rounds, --summary',
+      'Outputs: transcript .txt, result .json, events .jsonl'], ORANGE, 12)
+card(s, 6.8, 4.3, 5.9, 2.6, 'Modes and information hiding',
+     ['Mock: deterministic strategies, no API key', 'LLM: JSON-validated, retry, fallback, constraint guard',
+      'Private state guarded; messages qualitative; sanitize() redacts numbers'], '2DD4BF', 12)
+
+# ---------------------------------------------------------------- 8 demo
+s = slide('From outputs/baseline.txt. Round 1: IRB lowers dose to 75 mg; Sponsor cut to 180 blocked; Advocate cut '
+          'blocked until remote monitoring is funded.')
+header(s, '08  //  MULTI-AGENT EXECUTION', 'Baseline run: consensus in four rounds')
+rounds = [('ROUND 1  Conflict', ['IRB lowers dose 100 to 75 mg', 'Sponsor cut to 180 blocked: low power',
+                                 'Advocate visit cut blocked']),
+          ('ROUND 2  Trade-offs', ['Sponsor funds remote monitoring', 'Stratified randomisation added',
+                                   '180 patients, 4 visits accepted']),
+          ('ROUND 3  Clean-up', ['IRB drops non-safety exclusions', 'Budget aligned to cost']),
+          ('ROUND 4  Consensus', ['All four APPROVE', 'Protocol v4, 0 violations'])]
+for i, (t, ls) in enumerate(rounds):
+    card(s, 0.6, 1.5 + i * 1.38, 4.4, 1.32, t, ls, [ORANGE, VIOLET, CYAN, '2DD4BF'][i], 11)
+pic = s.shapes.add_picture(SHOT + '01_baseline_round1.png', Inches(5.2), Inches(1.55), height=Inches(5.0))
+if pic.width > Inches(7.5):
+    r = Inches(7.5) / pic.width
+    pic.width = Inches(7.5)
+    pic.height = int(pic.height * r)
+text(s, 5.2, 6.75, 7.5, 0.4, 'Round 1 transcript (python main.py)', 11, MUTED, False, MONO)
+
+# ---------------------------------------------------------------- 9 results
+s = slide('From python main.py --mode compare --scenario all (mock mode) and pytest. The single-agent baseline is '
+          'intentionally naive.')
+header(s, '09  //  TESTING & RESULTS', '96 tests pass; 8 of 8 scenarios reach consensus')
+table(s, 0.6, 1.6, 5.6, [
+    ['Test level', 'Verifies'],
+    ['Unit: tools', 'power, cost, recruitment'],
+    ['Unit: constraints', 'per-role violations'],
+    ['Unit: models / utils', 'dataclasses, helpers'],
+    ['Algorithm', 'order, partial accept, deadlock'],
+    ['Integration', 'privacy guard, LLM fallback'],
+    ['Scenario', 'all 8 reach valid consensus']], [2.1, 3.5], 11, 0.4)
+table(s, 0.6, 4.6, 5.6, [
+    ['Scenario', 'Rounds', 'Power', 'Viol.'],
+    ['baseline', '4', '0.847', '0'],
+    ['high_risk_drug', '5', '0.815', '0'],
+    ['pediatric', '4', '0.861', '0'],
+    ['unexpected_interim', '3', '0.824', '0']], [2.6, 1.0, 1.0, 1.0], 11, 0.38)
+cd = CategoryChartData()
+names = ['baseline', 'budget', 'high_risk', 'rare', 'pediatric', 'pandemic', 'multi_ctry', 'interim']
+cd.categories = names
+cd.add_series('Multi-agent', [0] * 8)
+cd.add_series('Single agent', [7, 8, 9, 7, 10, 8, 8, 4])
+gf = s.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, Inches(6.5), Inches(1.6), Inches(6.2), Inches(4.3), cd)
+ch = gf.chart
+ch.has_title = True
+ch.chart_title.text_frame.text = 'Constraint violations per scenario'
+ch.chart_title.text_frame.paragraphs[0].runs[0].font.size = Pt(14)
+ch.chart_title.text_frame.paragraphs[0].runs[0].font.color.rgb = rgb(WHITE)
+ch.has_legend = True
+ch.legend.include_in_layout = False
+ch.legend.font.color.rgb = rgb(WHITE)
+ch.legend.font.size = Pt(11)
+for ser, col in zip(ch.plots[0].series, [CYAN, ORANGE]):
+    ser.format.fill.solid()
+    ser.format.fill.fore_color.rgb = rgb(col)
+pl = ch.plots[0]
+pl.has_data_labels = True
+pl.data_labels.font.size = Pt(11)
+pl.data_labels.font.color.rgb = rgb(WHITE)
+for ax in (ch.category_axis, ch.value_axis):
+    ax.tick_labels.font.size = Pt(10)
+    ax.tick_labels.font.color.rgb = rgb(MUTED)
+ch.value_axis.major_gridlines.format.line.color.rgb = rgb('1F2A44')
+s.shapes.add_picture(SHOT + '04_pytest.png', Inches(6.5), Inches(6.05), width=Inches(6.2))
+
+# ---------------------------------------------------------------- 10 close
+s = slide('Likely questions: why not one LLM? (privacy, veto, audit). Is the baseline fair? (naive by design). '
+          'What if no agreement? (deadlock / max rounds report). Limitations: synthetic models, fixed order.')
+header(s, '10  //  CONCLUSION & Q&A', 'Consensus with zero violations across eight scenarios')
+card(s, 0.6, 1.6, 6.0, 2.5, 'Takeaways',
+     ['Private constraints + veto + audit trail need separate agents',
+      'Information asymmetry enforced in code and tested',
+      'Same engine handles 8 scenarios, including mid-trial changes'], CYAN, 13)
+card(s, 6.8, 1.6, 5.9, 2.5, 'Limitations',
+     ['Synthetic, simplified power / cost models', 'Hand-written mock strategies; fixed processing order',
+      'Baseline is deliberately naive'], ORANGE, 13)
+card(s, 0.6, 4.3, 12.1, 1.5, 'Live demo',
+     ['python main.py   |   python main.py --scenario high_risk_drug --summary   |   '
+      'python main.py --mode compare --scenario all   |   pytest -q'], VIOLET, 12)
+text(s, 0.6, 6.2, 12, 0.7, 'Thank you. Questions?', 28, WHITE, True, HEAD)
+
+prs.save('Clinical_Trial_MAS_Case_Study_v3.pptx')
+print('saved', len(prs.slides))

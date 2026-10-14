@@ -35,7 +35,7 @@ class ProposalStatus(str, Enum):
 class NegotiationStatus(str, Enum):
     CONSENSUS = "CONSENSUS"
     NO_CONSENSUS = "NO_CONSENSUS"  # round limit reached
-    DEADLOCK = "DEADLOCK"  # agents keep repeating the same blocked proposals
+    DEADLOCK = "DEADLOCK"  # protocol unchanged for two rounds in a row
 
 
 SPONSOR = "sponsor"

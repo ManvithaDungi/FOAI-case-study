@@ -12,12 +12,11 @@ Per round:
        d. blocking objections reject it; if a multi-field proposal is blocked, each field
           is retried on its own (compatible parts are kept, conflicting parts dropped).
   4. Accepted changes form a new protocol version; the ConstraintChecker audits it.
-  5. Stop on consensus, deadlock (identical blocked proposals repeated) or max_rounds.
+  5. Stop on consensus, deadlock (protocol unchanged for two rounds) or max_rounds.
 """
 
 from __future__ import annotations
 
-import json
 import time
 from typing import Any
 
@@ -67,7 +66,7 @@ class NegotiationEngine:
                    result=f"v{self.env.current_protocol.version}")
         rounds: list[NegotiationRound] = []
         status = NegotiationStatus.NO_CONSENSUS
-        previous_signature: tuple[Any, ...] | None = None
+        stalled_rounds = 0
 
         for number in range(1, self.max_rounds + 1):
             self.env.start_round(number)
@@ -76,12 +75,11 @@ class NegotiationEngine:
             if all(d.decision == Decision.APPROVE for d in rnd.decisions):
                 status = NegotiationStatus.CONSENSUS
                 break
-            signature = self._signature(rnd)
-            nothing_accepted = not any(p.accepted_changes for p in rnd.proposals)
-            if nothing_accepted and signature == previous_signature:
+            # Deadlock: the protocol did not change for two rounds in a row.
+            stalled_rounds = 0 if any(p.accepted_changes for p in rnd.proposals) else stalled_rounds + 1
+            if stalled_rounds >= 2:
                 status = NegotiationStatus.DEADLOCK
                 break
-            previous_signature = signature if nothing_accepted else None
 
         return self._build_result(scenario, rounds, status, time.perf_counter() - started)
 
@@ -103,8 +101,10 @@ class NegotiationEngine:
         candidate = protocol.copy()
         for agent_id in PROCESSING_ORDER:
             decision = decisions[agent_id]
-            if decision.proposed_changes:
-                proposal = Proposal(agent_id, dict(decision.proposed_changes), decision.reason, number,
+            # Ignore "changes" that only repeat the current value; they are not progress.
+            changes = {k: v for k, v in decision.proposed_changes.items() if getattr(candidate, k, None) != v}
+            if changes:
+                proposal = Proposal(agent_id, changes, decision.reason, number,
                                     proposal_id=f"R{number}-{agent_id}")
                 candidate = self.process_proposal(proposal, candidate)
                 rnd.proposals.append(proposal)
@@ -213,11 +213,6 @@ class NegotiationEngine:
         if proposal.rejected_changes:
             parts.append(f"blocked {format_changes(proposal.rejected_changes)}")
         return "; ".join(parts) or "no changes"
-
-    @staticmethod
-    def _signature(rnd: NegotiationRound) -> tuple[Any, ...]:
-        return tuple(sorted((p.agent, json.dumps(p.changes, sort_keys=True, default=str)) for p in rnd.proposals)) + \
-            tuple(sorted((d.agent, d.decision.value, json.dumps(d.requests, sort_keys=True)) for d in rnd.decisions))
 
     def _post(self, round_number: int, agent_id: str, action: str, content: str,
               proposal: dict[str, Any] | None = None, requests: dict[str, str] | None = None,

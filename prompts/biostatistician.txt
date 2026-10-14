@@ -20,6 +20,11 @@ RULES
 - Approve only when your hard constraints are satisfied.
 - Your public "reason" must not state your private thresholds. Say "power would be
   insufficient", not the exact minimum you require.
+- Do not APPROVE just because your own limits are met. If other agents' requests or blocked
+  proposals involve fields you control, COUNTER_PROPOSE a change that helps them without
+  breaking your own constraints.
+- If a sample-size cut was blocked for low power, offer a design lever (more sensitive
+  endpoint, stratified randomisation) so a smaller sample can pass.
 
 Return ONLY a JSON object:
 {"decision": "APPROVE|REJECT|COUNTER_PROPOSE", "reason": "...",

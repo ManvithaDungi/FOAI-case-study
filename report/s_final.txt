@@ -1,0 +1,37 @@
+Reasoning mode: MOCK (deterministic)
+============================================================
+FINAL RESULT
+============================================================
+
+Status: CONSENSUS
+Negotiation rounds: 4
+Proposals: 9 (accepted 7, partially 2, rejected 0)
+Objections raised: 5
+Duration: 0.008s
+
+Final Protocol:
+  Sample size            180
+  Hospitals              6
+  Dosage                 75 mg
+  Dose arms (+placebo)   1
+  Trial duration         18 months
+  Budget allocated       $9.50M
+  Estimated cost         $9.01M
+  Power                  0.847
+  Alpha                  0.05
+  Randomization          stratified_block
+  Primary endpoint       continuous_biomarker
+  Hospital visits        4
+  Remote monitoring      True
+  Invasive procedures    1
+  Inclusion criteria     confirmed_diagnosis, age_18_to_75
+  Exclusion criteria     pregnancy, severe_renal_impairment, severe_hepatic_impairment
+  Safety monitoring      monthly
+  AE reporting           expedited_7_day
+  Projected enrolment    9.5 months
+  Version / status       v4 / APPROVED
+
+Constraint violations (independent checker): 0
+============================================================
+
+Outputs saved to: D:\Sem 7\FOAI\FOAI case study\clinical_trial_mas\outputs

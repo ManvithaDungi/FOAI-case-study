@@ -19,6 +19,9 @@ RULES
 - Propose changes when necessary, ONLY to fields you control; use "requests" for others.
 - Approve only when your hard constraints are satisfied.
 - Do not reveal exact private limits ("too many visits", not "more than N visits").
+- Do not APPROVE just because your own limits are met. If other agents' requests or blocked
+  proposals involve fields you control, COUNTER_PROPOSE a change that helps them without
+  breaking your own constraints.
 
 Return ONLY a JSON object:
 {"decision": "APPROVE|REJECT|COUNTER_PROPOSE", "reason": "...",

@@ -1,0 +1,46 @@
+Reasoning mode: MOCK (deterministic)
+============================================================
+SINGLE-AGENT BASELINE
+============================================================
+
+Scenario: Baseline Phase II Protocol
+Mode: single-agent baseline (mock)
+
+Architecture:
+  - one reasoning process with one blended objective (weights {'cost': 0.35, 'power': 0.25, 'safety': 0.2, 'burden': 0.2})
+  - required access to ALL four stakeholders' private constraints
+  - no negotiation, no vetoes, no per-stakeholder audit trail
+
+Generated Protocol:
+  Sample size            260
+  Hospitals              12
+  Dosage                 75 mg
+  Dose arms (+placebo)   1
+  Trial duration         18 months
+  Budget allocated       $13.04M
+  Estimated cost         $13.04M
+  Power                  0.798
+  Alpha                  0.05
+  Randomization          block
+  Primary endpoint       binary_response
+  Hospital visits        4
+  Remote monitoring      False
+  Invasive procedures    1
+  Inclusion criteria     confirmed_diagnosis, age_18_to_55, no_prior_therapy
+  Exclusion criteria     pregnancy, severe_renal_impairment, prior_cancer, bmi_over_35, concomitant_medication
+  Safety monitoring      monthly
+  AE reporting           standard_15_day
+  Projected enrolment    11.1 months
+  Version / status       v1 / GENERATED (no stakeholder approval)
+
+Constraint violations (independent checker): 7
+  - Sponsor: sample_size <= 220 (actual: 260)
+  - Biostatistician: power >= 0.80 (actual: 0.7983)
+  - Ethics Committee: AE reporting >= expedited_7_day (actual: standard_15_day)
+  - Ethics Committee: exclusions include ['pregnancy', 'severe_renal_impairment', 'severe_hepatic_impairment'] (actual: ['pregnancy', 'severe_renal_impairment', 'prior_cancer', 'bmi_over_35', 'concomitant_medication'])
+  - Ethics Committee: visits >= 8 unless remote monitoring (actual: 4)
+  - Patient Advocate: len(exclusion_criteria) <= 4 (actual: 5)
+  - Patient Advocate: no restrictive inclusions ['age_18_to_55', 'no_prior_therapy'] (actual: ['age_18_to_55', 'no_prior_therapy'])
+============================================================
+
+Outputs saved to: D:\Sem 7\FOAI\FOAI case study\clinical_trial_mas\outputs

@@ -33,6 +33,8 @@ class Settings:
     model: str
     temperature: float
     timeout_seconds: int
+    min_interval_seconds: float = 0.0  # pause between LLM calls (free tiers limit requests per minute)
+    max_retries: int = 4  # extra attempts on HTTP 429 / 5xx, with backoff
 
     @property
     def llm_available(self) -> bool:
@@ -52,4 +54,6 @@ def load_settings(env_file: Path | None = None) -> Settings:
         model=get("MODEL", "gpt-4o-mini") or "gpt-4o-mini",
         temperature=float(get("LLM_TEMPERATURE", "0.2") or 0.2),
         timeout_seconds=int(get("LLM_TIMEOUT_SECONDS", "60") or 60),
+        min_interval_seconds=float(get("LLM_MIN_INTERVAL_SECONDS", "0") or 0),
+        max_retries=int(get("LLM_MAX_RETRIES", "4") or 4),
     )

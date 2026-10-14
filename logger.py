@@ -44,9 +44,10 @@ class EventLogger:
 # ----------------------------------------------------------------------
 
 def _fmt_value(name: str, value: Any) -> str:
-    if name in {"budget", "estimated_cost"}:
+    is_number = isinstance(value, (int, float)) and not isinstance(value, bool)
+    if name in {"budget", "estimated_cost"} and is_number:  # requests carry text like "decrease"
         return f"${value / 1e6:.2f}M"
-    if name == "power":
+    if name == "power" and is_number:
         return f"{value:.3f}"
     if isinstance(value, list):
         return ", ".join(value) if value else "(none)"

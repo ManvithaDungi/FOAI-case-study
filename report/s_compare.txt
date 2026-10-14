@@ -1,0 +1,15 @@
+MULTI-AGENT vs SINGLE-AGENT
+============================================================
+Scenario              MAS status     Rounds MAS viol.  Single viol.
+-------------------------------------------------------------------
+baseline              CONSENSUS           4         0             7
+budget_reduction      CONSENSUS           5         0             8
+high_risk_drug        CONSENSUS           5         0             9
+rare_disease          CONSENSUS           5         0             7
+pediatric             CONSENSUS           4         0            10
+pandemic              CONSENSUS           4         0             8
+multi_country         CONSENSUS           4         0             8
+unexpected_interim    CONSENSUS           3         0             4
+
+Single agent: 1 reasoning process, blended objective, saw ALL private constraints, no vetoes.
+Multi-agent : 4 independent processes, private constraints, explicit negotiation, vetoes.

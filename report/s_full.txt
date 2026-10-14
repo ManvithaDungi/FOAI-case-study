@@ -1,0 +1,203 @@
+Reasoning mode: MOCK (deterministic)
+============================================================
+MULTI-AGENT CLINICAL TRIAL NEGOTIATION
+============================================================
+
+Scenario: Baseline Phase II Protocol
+Mode: mock
+
+Round 1  (reviewing protocol v1)
+----------------------------------------
+
+Sponsor: COUNTER_PROPOSE
+  Reason: Dropping a dose arm cuts drug-supply and site costs. Reducing the sample size lowers per-patient cost. Resizing the site network to what recruitment actually requires. Costs are still too high; fewer visits and procedures would help.
+  Proposes: dosage_arms=1; sample_size=180; number_of_hospitals=8
+  Requests: hospital_visits=decrease; invasive_procedures=decrease
+
+Biostatistician: COUNTER_PROPOSE
+  Reason: Switching to a more sensitive primary endpoint recovers statistical power.
+  Proposes: primary_endpoint=continuous_biomarker
+
+Ethics Committee: COUNTER_PROPOSE
+  Reason: The proposed dosage exceeds my safety requirements; I am lowering it to a safer level. Adverse events must be reported on a faster timeline. High-risk patient groups must be excluded for their own safety.
+  Proposes: dosage=75.0; adverse_event_reporting=expedited_7_day; exclusion_criteria=pregnancy, severe_renal_impairment, prior_cancer, bmi_over_35, concomitant_medication, severe_hepatic_impairment
+
+Patient Advocate: COUNTER_PROPOSE
+  Reason: The visit schedule is too burdensome; I propose a lighter schedule. Remote monitoring would let participants stay home safely. Participants are asked to undergo too many invasive procedures. Inclusion criteria should be broadened so more patients can take part. Too many patients are excluded; please narrow the exclusion list.
+  Proposes: hospital_visits=6; invasive_procedures=1; inclusion_criteria=confirmed_diagnosis, age_18_to_75
+  Requests: remote_monitoring=enable; exclusion_criteria=decrease
+
+  Proposal outcomes:
+   - Ethics Committee: ACCEPTED
+       accepted: dosage=75.0; adverse_event_reporting=expedited_7_day; exclusion_criteria=pregnancy, severe_renal_impairment, prior_cancer, bmi_over_35, concomitant_medication, severe_hepatic_impairment
+       objection: Sponsor (objection_overridden): Recruitment cannot finish within the study timeline.
+       objection: Biostatistician (objection_overridden): Statistical power would be too low; the study would be underpowered.
+       objection: Patient Advocate (advisory_objection): Eligibility is too narrow; too many patients who could benefit are excluded.
+   - Sponsor: PARTIALLY_ACCEPTED
+       accepted: dosage_arms=1; number_of_hospitals=8
+       blocked:  sample_size=180
+       objection: Biostatistician: Statistical power would be too low; the study would be underpowered.
+   - Biostatistician: ACCEPTED
+       accepted: primary_endpoint=continuous_biomarker
+   - Patient Advocate: PARTIALLY_ACCEPTED
+       accepted: invasive_procedures=1; inclusion_criteria=confirmed_diagnosis, age_18_to_75
+       blocked:  hospital_visits=6
+       objection: Ethics Committee: Fewer in-person visits without remote safety monitoring would leave participants under-observed.
+  Constraint checker: 6 open violation(s) after this round
+------------------------------------------------------------
+
+Round 2  (reviewing protocol v2)
+----------------------------------------
+
+Sponsor: COUNTER_PROPOSE
+  Reason: Reducing the sample size lowers per-patient cost. I will fund remote monitoring so site visits can be reduced without losing oversight. Resizing the site network to what recruitment actually requires.
+  Proposes: sample_size=180; remote_monitoring=True; number_of_hospitals=6
+
+Biostatistician: COUNTER_PROPOSE
+  Reason: Stratified block randomisation reduces variance so a leaner sample can still be adequately powered.
+  Proposes: randomization_scheme=stratified_block
+
+Ethics Committee: APPROVE
+  Reason: Participant safety safeguards are adequate. Ethics Committee approves.
+
+Patient Advocate: COUNTER_PROPOSE
+  Reason: The visit schedule is too burdensome; I propose a lighter schedule. I support cutting visits further. Remote monitoring would let participants stay home safely. Too many patients are excluded; please narrow the exclusion list.
+  Proposes: hospital_visits=4
+  Requests: remote_monitoring=enable; exclusion_criteria=decrease
+
+  Proposal outcomes:
+   - Sponsor: ACCEPTED
+       accepted: sample_size=180; remote_monitoring=True; number_of_hospitals=6
+   - Biostatistician: ACCEPTED
+       accepted: randomization_scheme=stratified_block
+   - Patient Advocate: ACCEPTED
+       accepted: hospital_visits=4
+  Constraint checker: 1 open violation(s) after this round
+------------------------------------------------------------
+
+Round 3  (reviewing protocol v3)
+----------------------------------------
+
+Sponsor: COUNTER_PROPOSE
+  Reason: Updating the budget allocation to match the projected cost.
+  Proposes: budget=$9.50M
+
+Biostatistician: APPROVE
+  Reason: The design is adequately powered with a valid analysis plan. Biostatistician approves.
+
+Ethics Committee: COUNTER_PROPOSE
+  Reason: I can drop exclusion criteria that are not safety-critical to widen access.
+  Proposes: exclusion_criteria=pregnancy, severe_renal_impairment, severe_hepatic_impairment
+
+Patient Advocate: REJECT
+  Reason: Eligibility is too narrow; too many patients who could benefit are excluded.
+  Requests: exclusion_criteria=decrease
+
+  Proposal outcomes:
+   - Ethics Committee: ACCEPTED
+       accepted: exclusion_criteria=pregnancy, severe_renal_impairment, severe_hepatic_impairment
+   - Sponsor: ACCEPTED
+       accepted: budget=$9.50M
+  Constraint checker: 0 open violation(s) after this round
+------------------------------------------------------------
+
+Round 4  (reviewing protocol v4)
+----------------------------------------
+
+Sponsor: APPROVE
+  Reason: The protocol is fundable and fits the development timeline. Sponsor approves.
+
+Biostatistician: APPROVE
+  Reason: The design is adequately powered with a valid analysis plan. Biostatistician approves.
+
+Ethics Committee: APPROVE
+  Reason: Participant safety safeguards are adequate. Ethics Committee approves.
+
+Patient Advocate: APPROVE
+  Reason: The participant burden is acceptable and access is fair. Patient Advocate approves.
+------------------------------------------------------------
+
+============================================================
+FINAL RESULT
+============================================================
+
+Status: CONSENSUS
+Negotiation rounds: 4
+Proposals: 9 (accepted 7, partially 2, rejected 0)
+Objections raised: 5
+Duration: 0.008s
+
+Final Protocol:
+  Sample size            180
+  Hospitals              6
+  Dosage                 75 mg
+  Dose arms (+placebo)   1
+  Trial duration         18 months
+  Budget allocated       $9.50M
+  Estimated cost         $9.01M
+  Power                  0.847
+  Alpha                  0.05
+  Randomization          stratified_block
+  Primary endpoint       continuous_biomarker
+  Hospital visits        4
+  Remote monitoring      True
+  Invasive procedures    1
+  Inclusion criteria     confirmed_diagnosis, age_18_to_75
+  Exclusion criteria     pregnancy, severe_renal_impairment, severe_hepatic_impairment
+  Safety monitoring      monthly
+  AE reporting           expedited_7_day
+  Projected enrolment    9.5 months
+  Version / status       v4 / APPROVED
+
+Constraint violations (independent checker): 0
+============================================================
+
+============================================================
+NEGOTIATION TRANSCRIPT (public board)
+============================================================
+
+[Round 0]
+Sponsor [INITIAL_PROPOSAL] -> v1: Sponsor submits the initial protocol draft for review.
+
+[Round 1]
+Sponsor [REVIEW] -> COUNTER_PROPOSE: Dropping a dose arm cuts drug-supply and site costs. Reducing the sample size lowers per-patient cost. Resizing the site network to what recruitment actually requires. Costs are still too high; fewer visits and procedures would help. {dosage_arms=1; sample_size=180; number_of_hospitals=8}
+Biostatistician [REVIEW] -> COUNTER_PROPOSE: Switching to a more sensitive primary endpoint recovers statistical power. {primary_endpoint=continuous_biomarker}
+Ethics Committee [REVIEW] -> COUNTER_PROPOSE: The proposed dosage exceeds my safety requirements; I am lowering it to a safer level. Adverse events must be reported on a faster timeline. High-risk patient groups must be excluded for their own safety. {dosage=75.0; adverse_event_reporting=expedited_7_day; exclusion_criteria=pregnancy, severe_renal_impairment, prior_cancer, bmi_over_35, concomitant_medication, severe_hepatic_impairment}
+Patient Advocate [REVIEW] -> COUNTER_PROPOSE: The visit schedule is too burdensome; I propose a lighter schedule. Remote monitoring would let participants stay home safely. Participants are asked to undergo too many invasive procedures. Inclusion criteria should be broadened so more patients can take part. Too many patients are excluded; please narrow the exclusion list. {hospital_visits=6; invasive_procedures=1; inclusion_criteria=confirmed_diagnosis, age_18_to_75}
+Sponsor [OBJECTION_OVERRIDDEN]: Recruitment cannot finish within the study timeline. {dosage=75.0; adverse_event_reporting=expedited_7_day; exclusion_criteria=pregnancy, severe_renal_impairment, prior_cancer, bmi_over_35, concomitant_medication, severe_hepatic_impairment}
+Biostatistician [OBJECTION_OVERRIDDEN]: Statistical power would be too low; the study would be underpowered. {dosage=75.0; adverse_event_reporting=expedited_7_day; exclusion_criteria=pregnancy, severe_renal_impairment, prior_cancer, bmi_over_35, concomitant_medication, severe_hepatic_impairment}
+Patient Advocate [ADVISORY_OBJECTION]: Eligibility is too narrow; too many patients who could benefit are excluded. {dosage=75.0; adverse_event_reporting=expedited_7_day; exclusion_criteria=pregnancy, severe_renal_impairment, prior_cancer, bmi_over_35, concomitant_medication, severe_hepatic_impairment}
+Ethics Committee [PROPOSAL_RESULT] -> ACCEPTED: accepted dosage=75.0; adverse_event_reporting=expedited_7_day; exclusion_criteria=pregnancy, severe_renal_impairment, prior_cancer, bmi_over_35, concomitant_medication, severe_hepatic_impairment {dosage=75.0; adverse_event_reporting=expedited_7_day; exclusion_criteria=pregnancy, severe_renal_impairment, prior_cancer, bmi_over_35, concomitant_medication, severe_hepatic_impairment}
+Biostatistician [OBJECTION] -> BLOCKS: Statistical power would be too low; the study would be underpowered. {sample_size=180}
+Sponsor [PROPOSAL_RESULT] -> PARTIALLY_ACCEPTED: accepted dosage_arms=1; number_of_hospitals=8; blocked sample_size=180 {dosage_arms=1; number_of_hospitals=8}
+Biostatistician [PROPOSAL_RESULT] -> ACCEPTED: accepted primary_endpoint=continuous_biomarker {primary_endpoint=continuous_biomarker}
+Ethics Committee [OBJECTION] -> BLOCKS: Fewer in-person visits without remote safety monitoring would leave participants under-observed. {hospital_visits=6}
+Patient Advocate [PROPOSAL_RESULT] -> PARTIALLY_ACCEPTED: accepted invasive_procedures=1; inclusion_criteria=confirmed_diagnosis, age_18_to_75; blocked hospital_visits=6 {invasive_procedures=1; inclusion_criteria=confirmed_diagnosis, age_18_to_75}
+environment [PROTOCOL_UPDATE]: Protocol v2; 6 open issue(s) remain.
+
+[Round 2]
+Sponsor [REVIEW] -> COUNTER_PROPOSE: Reducing the sample size lowers per-patient cost. I will fund remote monitoring so site visits can be reduced without losing oversight. Resizing the site network to what recruitment actually requires. {sample_size=180; remote_monitoring=True; number_of_hospitals=6}
+Biostatistician [REVIEW] -> COUNTER_PROPOSE: Stratified block randomisation reduces variance so a leaner sample can still be adequately powered. {randomization_scheme=stratified_block}
+Ethics Committee [REVIEW] -> APPROVE: Participant safety safeguards are adequate. Ethics Committee approves.
+Patient Advocate [REVIEW] -> COUNTER_PROPOSE: The visit schedule is too burdensome; I propose a lighter schedule. I support cutting visits further. Remote monitoring would let participants stay home safely. Too many patients are excluded; please narrow the exclusion list. {hospital_visits=4}
+Sponsor [PROPOSAL_RESULT] -> ACCEPTED: accepted sample_size=180; remote_monitoring=True; number_of_hospitals=6 {sample_size=180; remote_monitoring=True; number_of_hospitals=6}
+Biostatistician [PROPOSAL_RESULT] -> ACCEPTED: accepted randomization_scheme=stratified_block {randomization_scheme=stratified_block}
+Patient Advocate [PROPOSAL_RESULT] -> ACCEPTED: accepted hospital_visits=4 {hospital_visits=4}
+environment [PROTOCOL_UPDATE]: Protocol v3; 1 open issue(s) remain.
+
+[Round 3]
+Sponsor [REVIEW] -> COUNTER_PROPOSE: Updating the budget allocation to match the projected cost. {budget=$9.50M}
+Biostatistician [REVIEW] -> APPROVE: The design is adequately powered with a valid analysis plan. Biostatistician approves.
+Ethics Committee [REVIEW] -> COUNTER_PROPOSE: I can drop exclusion criteria that are not safety-critical to widen access. {exclusion_criteria=pregnancy, severe_renal_impairment, severe_hepatic_impairment}
+Patient Advocate [REVIEW] -> REJECT: Eligibility is too narrow; too many patients who could benefit are excluded.
+Ethics Committee [PROPOSAL_RESULT] -> ACCEPTED: accepted exclusion_criteria=pregnancy, severe_renal_impairment, severe_hepatic_impairment {exclusion_criteria=pregnancy, severe_renal_impairment, severe_hepatic_impairment}
+Sponsor [PROPOSAL_RESULT] -> ACCEPTED: accepted budget=$9.50M {budget=$9.50M}
+environment [PROTOCOL_UPDATE]: Protocol v4; 0 open issue(s) remain.
+
+[Round 4]
+Sponsor [REVIEW] -> APPROVE: The protocol is fundable and fits the development timeline. Sponsor approves.
+Biostatistician [REVIEW] -> APPROVE: The design is adequately powered with a valid analysis plan. Biostatistician approves.
+Ethics Committee [REVIEW] -> APPROVE: Participant safety safeguards are adequate. Ethics Committee approves.
+Patient Advocate [REVIEW] -> APPROVE: The participant burden is acceptable and access is fair. Patient Advocate approves.
+
+Outputs saved to: D:\Sem 7\FOAI\FOAI case study\clinical_trial_mas\outputs
